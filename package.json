@@ -1,0 +1,39 @@
+{
+  "name": "open-finance-wallet-simulator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/apps/backend/src/main.js",
+    "dev": "tsx apps/backend/src/main.ts",
+    "lab:init": "tsx tools/lab/init.ts",
+    "lab": "tsx tools/lab/main.ts",
+    "test": "npm run test:functional && npm run test:security && npm run test:contract",
+    "test:functional": "tsx --test apps/backend/test/functional.test.ts",
+    "test:security": "tsx --test apps/backend/test/security.test.ts",
+    "test:postgres": "tsx --test apps/backend/test/postgres.test.ts",
+    "smoke": "tsx tools/lab/smoke.ts",
+    "test:contract": "tsx --test apps/backend/test/contracts.test.ts",
+    "reconcile": "tsx apps/backend/src/reconcile.ts",
+    "image:build:cloud": "tsx tools/build-image.ts"
+  },
+  "dependencies": {
+    "fastify": "5.12.7",
+    "jose": "6.2.13",
+    "pg": "8.23.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "@types/pg": "8.15.6",
+    "ajv": "8.20.0",
+    "tsx": "4.23.15",
+    "typescript": "6.0.2",
+    "yaml": "2.9.1"
+  }
+}

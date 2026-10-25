@@ -1,0 +1,67 @@
+{
+  "targets": {
+    "dcr": "2.1.0",
+    "fapi": "2.2.1",
+    "certificates": "3.0"
+  },
+  "targetConformance": "Local implementation reconciled with pinned target references; sandbox and formal conformance not validated",
+  "sources": [
+    {
+      "file": "certificates-id2-ptbr.md",
+      "sha256": "9d3a21d7edae7ee8400e8ebbb0f8e10b7fa25eabab13d5147636e721dd80799c",
+      "source": "https://github.com/OpenBanking-Brasil/specs-seguranca/blob/9bb9b2979f57638ad53ec3b8ed3d1ec084de2dda/open-banking-brasil-certificate-standards-1_ID2-ptbr.md",
+      "status": "archived-reference"
+    },
+    {
+      "file": "dcr-dcm-2.0.1.yaml",
+      "sha256": "0e33482700af878e12c06280ea03fadfc423843dc32ed74cd340b0b322d6210d",
+      "source": "https://github.com/OpenBanking-Brasil/specs-seguranca/blob/9bb9b2979f57638ad53ec3b8ed3d1ec084de2dda/dcr_review/dcr-dcm-swagger.yaml",
+      "status": "archived-reference"
+    },
+    {
+      "file": "dcr-id3-ptbr.md",
+      "sha256": "d74cb7b8dc76c7b4033d5368058a736036ff5950c53fac448f059d6a91373721",
+      "source": "https://github.com/OpenBanking-Brasil/specs-seguranca/blob/9bb9b2979f57638ad53ec3b8ed3d1ec084de2dda/open-banking-brasil-dynamic-client-registration-1_ID3-ptbr.md",
+      "status": "archived-reference"
+    },
+    {
+      "file": "fapi-id3-ptbr.md",
+      "sha256": "384280ea42e4955fc63168626872ca34ab1ee6446e8740ebe1eba84a131c93a4",
+      "source": "https://github.com/OpenBanking-Brasil/specs-seguranca/blob/9bb9b2979f57638ad53ec3b8ed3d1ec084de2dda/open-banking-brasil-financial-api-1_ID3-ptbr.md",
+      "status": "archived-reference"
+    },
+    {
+      "file": "participants-1.1.0.yaml",
+      "sha256": "d25e684f5e597d78125b86e90e0b15cbc8dd9997444ce04bba9349ce25e9ec71",
+      "source": "https://github.com/OpenBanking-Brasil/specs-directory/blob/fadd5e2c90f0b0d0febe2d209cd60f5bf92af21c/swagger_participants.yaml",
+      "status": "archived-reference"
+    },
+    {
+      "file": "dcr-br-2.1.0.html",
+      "source": "https://openfinancebrasil.atlassian.net/wiki/rest/api/content/1334116369?expand=body.storage,version,space",
+      "pageId": "1334116369",
+      "title": "[PT]  Open Finance Brasil Dynamic Client Registration - v2.1.0",
+      "pageVersion": 2,
+      "sha256": "7611d0f297f0a14a2464b7eb842c116b9931c5dda3ec521e6487d4e6b3a62be7",
+      "status": "official-target-reference"
+    },
+    {
+      "file": "fapi-br-2.2.1.html",
+      "source": "https://openfinancebrasil.atlassian.net/wiki/rest/api/content/1957625902?expand=body.storage,version,space",
+      "pageId": "1957625902",
+      "title": "[PT] Open Finance Brasil Financial-grade API Security Profile - v2.2.1",
+      "pageVersion": 3,
+      "sha256": "bed46a3f20f03c6d6b16398c1e0d5e16d4e8a6d45c3e6d51829bf852ea8f5914",
+      "status": "official-target-reference"
+    },
+    {
+      "file": "certificates-3.0.html",
+      "source": "https://openfinancebrasil.atlassian.net/wiki/rest/api/content/2127298593?expand=body.storage,version,space",
+      "pageId": "2127298593",
+      "title": "[PT] Padrão de Certificados Open Finance Brasil 3.0",
+      "pageVersion": 1,
+      "sha256": "2a6addf49468fe42a54610bd3046101d5ffda19e9d001c6093af42661d6ec63e",
+      "status": "official-target-reference"
+    }
+  ]
+}

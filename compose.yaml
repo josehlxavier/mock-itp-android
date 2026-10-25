@@ -1,0 +1,55 @@
+name: wallet-itp
+services:
+  postgres:
+    image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+    environment:
+      POSTGRES_DB: itp
+      POSTGRES_USER: itp
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets: [postgres_password]
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U itp -d itp"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  lab:
+    build: .
+    image: wallet-itp:local
+    command: ["node", "dist/tools/lab/main.js"]
+    environment:
+      ITP_CONFIG: /app/.local/config.json
+      DATABASE_URL_FILE: /app/.local/database.container.url
+      BIND_HOST: 0.0.0.0
+    volumes: ["./.local:/app/.local:ro"]
+    ports: ["127.0.0.1:3000:3000", "127.0.0.1:9443:9443"]
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "node", "-e", "const f=require('fs'),h=require('https');h.get('https://localhost:9443/participants',{ca:f.readFileSync('.local/ca.pem'),cert:f.readFileSync('.local/transport.pem'),key:f.readFileSync('.local/transport.key')},r=>{r.resume();process.exitCode=r.statusCode===200?0:1}).on('error',()=>process.exitCode=1)"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+  backend:
+    image: wallet-itp:local
+    build: .
+    # Share loopback with lab so local certificate SANs and discovery URLs match on host and in containers.
+    network_mode: service:lab
+    environment:
+      ITP_CONFIG: /app/.local/config.json
+      DATABASE_URL_FILE: /app/.local/database.container.url
+      BIND_HOST: 0.0.0.0
+    volumes: ["./.local:/app/.local:ro"]
+    depends_on:
+      lab: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(async r=>{const b=await r.json();process.exitCode=r.ok&&b.mode==='local'?0:1}).catch(()=>process.exitCode=1)"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+secrets:
+  postgres_password:
+    file: ./.local/postgres.password
+volumes:
+  postgres-data:
