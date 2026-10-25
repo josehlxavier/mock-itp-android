@@ -1,0 +1,31 @@
+name: Backend M01-M03
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
+        env:
+          POSTGRES_USER: itp
+          POSTGRES_DB: itp
+          POSTGRES_PASSWORD: isolated-ci-test-password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U itp -d itp"
+          --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      TEST_DATABASE_URL: postgres://itp:isolated-ci-test-password@127.0.0.1:5432/itp
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run test:postgres
+      - run: npm run build

@@ -1,0 +1,580 @@
+openapi: 3.0.0
+info:
+  title: "Participantes Open Banking Brasil"
+  version: 1.1.0
+  description: Informações sobre os participantes do Open Banking Brasil que estão registrados no Diretório.
+  license:
+    name: MIT
+    url: https://mit-license.org
+servers:
+  - url: https://data.sandbox.directory.openbankingbrasil.org.br
+    description: Open Banking Brasil Sandbox
+  - url: https://data.directory.openbankingbrasil.org.br
+    description: Open Banking Brasil Production
+  - url: https://data.sandbox.directory.opinbrasil.org.br
+paths:
+  '/participants':
+    get:
+      parameters:
+        - $ref: "#/components/parameters/x-fapi-interaction-id"
+
+      tags:
+        - OpenID Provider
+
+      responses:
+        '200':
+          $ref: '#/components/responses/ParticipantsResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        '504':
+          $ref: '#/components/responses/UpstreamTimeout'
+
+components:
+  parameters:
+    x-customer-user-agent:
+      in: "header"
+      name: "x-customer-user-agent"
+      description: "Indicates the user-agent that the PSU is using."
+      required: false
+      schema:
+        type: "string"
+    x-fapi-customer-ip-address:
+      in: "header"
+      name: "x-fapi-customer-ip-address"
+      required: false
+      description: "The PSU's IP address if the PSU is currently logged in with the TPP."
+      schema:
+        type: "string"
+    x-fapi-auth-date:
+      in: "header"
+      name: "x-fapi-auth-date"
+      required: false
+      description: "The time when the PSU last logged in with the TPP. \nAll dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below: \nSun, 10 Sep 2017 19:43:31 UTC"
+      schema:
+        type: "string"
+        pattern: "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$"
+    x-fapi-interaction-id:
+      in: "header"
+      name: "x-fapi-interaction-id"
+      required: false
+      description: "An RFC4122 UID used as a correlation id."
+      schema:
+        $ref: '#/components/schemas/x-fapi-interaction-id'
+
+  responses:
+    Forbidden:
+      description: Forbidden
+      headers:
+        x-fapi-interaction-id:
+          schema:
+            $ref: '#/components/schemas/x-fapi-interaction-id'
+
+    NotFound:
+      description: Not found
+      headers:
+        x-fapi-interaction-id:
+          schema:
+            $ref: '#/components/schemas/x-fapi-interaction-id'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HttpResponseBody'
+
+    BadGateway:
+      description: Bad Gateway
+      headers:
+        x-fapi-interaction-id:
+          schema:
+            $ref: '#/components/schemas/x-fapi-interaction-id'
+
+    UpstreamTimeout:
+      description: Upstream timeout, insufficient capacity to serve request. More capacity being brought online. Please try again.
+      headers:
+        x-fapi-interaction-id:
+          schema:
+            $ref: '#/components/schemas/x-fapi-interaction-id'
+
+    TooManyRequests:
+      description: Too many requests, maximum capacity reached. Requests are now throttled.
+      headers:
+        x-fapi-interaction-id:
+          schema:
+            $ref: '#/components/schemas/x-fapi-interaction-id'
+
+    ParticipantsResponse:
+      description: A list containing all relying parties objects
+      headers:
+        x-fapi-interaction-id:
+          schema:
+            $ref: '#/components/schemas/x-fapi-interaction-id'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ParticipantObjectList'
+
+  schemas:
+    x-fapi-interaction-id:
+      description: "An RFC4122 UID used as a correlation id."
+      type: string
+      pattern: '^[a-zA-Z0-9][a-zA-Z0-9\-]{0,99}$'
+      minLength: 1
+      maxLength: 100
+      example: 73cac523-d3ae-2289-b106-330a6218710d
+
+    HttpResponseBody:
+      type: object
+      properties:
+        errors:
+          type: array
+          description: Validation Error messages
+          items:
+            type: string
+
+    ParticipantObjectList:
+      type: array
+      items:
+        $ref: '#/components/schemas/ParticipantObject'
+
+    ParticipantObject:
+      type: object
+      properties:
+        OrganisationId:
+          $ref: '#/components/schemas/OrganisationId'
+        Status:
+          type: string
+          description: Status of the directory registration of an organisation
+          enum:
+            - Active
+            - Pending
+            - Withdrawn
+          default: Active
+        OrganisationName:
+          type: string
+          description: Name of the organisation.
+          maxLength: 255
+          example: "Org123"
+        CreatedOn:
+          type: string
+          description: JSONDatetime of organisation creation.
+          maxLength: 30
+          example: "2018-12-10T13:45:00.000Z"
+        LegalEntityName:
+          type: string
+          description: Legal Entity name for the org. Usually the same as org name
+          maxLength: 255
+          example: "Org123"
+        CountryOfRegistration:
+          type: string
+          description: Country of registration for the org
+          maxLength: 255
+          example: "Scotland"
+        CompanyRegister:
+          type: string
+          description: Legal company register for the country, i.e. Companies House.
+          maxLength: 255
+          example: "Companies House"
+        Tag:
+          type: string
+          description: Label to describe an organisation
+          maxLength: 255
+          example: "Api Provider"
+        Size:
+          type: string
+          description: Size of an organisation
+          maxLength: 255
+          example: "T3"
+        RegistrationNumber:
+          type: string
+          description: Company registration number from company register i.e. Companies House registration number
+          maxLength: 255
+          example: "123456789"
+        RegistrationId:
+          type: string
+          description: Registered ID for the organisation i.e. Legal Entity identifier number
+          maxLength: 40
+          example: "123456789"
+        RegisteredName:
+          type: string
+          maxLength: 255
+          example: "Org123"
+        AddressLine1:
+          type: string
+          description: Address line 1
+          maxLength: 255
+          example: "13 Street"
+        AddressLine2:
+          type: string
+          description: Address line 2
+          maxLength: 255
+          example: "Road"
+        City:
+          type: string
+          description: City
+          maxLength: 255
+          example: "Edinburgh"
+        Postcode:
+          type: string
+          description: Postcode
+          maxLength: 40
+          example: "EH1 234"
+        Country:
+          type: string
+          description: Country
+          maxLength: 255
+          example: "Scotland"
+        ParentOrganisationReference:
+          type: string
+          description: Parent Organisation Reference
+          maxLength: 65535
+          example: "ParentOrg123"
+        AuthorisationServers:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorisationServer'
+        OrgDomainClaims:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganisationAuthorityDomainClaim'
+        OrgDomainRoleClaims:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrganisationAuthorityClaim'
+
+
+    OrganisationId:
+      type: string
+      description: Unique ID associated with the organisation
+      minLength: 1
+      maxLength: 40
+      example: "5f69111d-5cc3-43ea-ba97-30392654a505"
+
+    AuthorisationServer:
+      type: object
+      properties:
+        AuthorisationServerId:
+          type: string
+          maxLength: 40
+          example: "f6a52f4a-e270-4482-914e-9948c594f876"
+        OrganisationId:
+          $ref: '#/components/schemas/OrganisationId'
+        AutoRegistrationSupported:
+          type: boolean
+          description: Flag to denote if this authorisation server supports the automatic onboarding of software statement clients
+          default: false
+        SupportsCiba:
+          type: boolean
+          default: false
+        SupportsDCR:
+          type: boolean
+          default: false
+        ApiResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiResource'
+        AuthorisationServerCertifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorisationServerCertification'
+        CustomerFriendlyDescription:
+          type: string
+          maxLength: 255
+          example: "Some description"
+        CustomerFriendlyLogoUri:
+          description: A compliant URI
+          pattern: "^(http:\\/\\/|https:\\/\\/).*\\.(svg)$"
+          x-pattern-message: "CustomerFriendlyLogoUri must be in a URI format https://... .svg or http://... .svg"
+          type: string
+          format: uri
+          maxLength: 255
+          example: "https://example.com/logo.svg"
+        CustomerFriendlyName:
+          type: string
+          maxLength: 255
+          example: "Example Auth"
+        DeveloperPortalUri:
+          description: A compliant URI
+          pattern: "^(http:\\/\\/|https:\\/\\/).*"
+          x-pattern-message: "DeveloperPortalUri must be in a URI format https://... or http://..."
+          type: string
+          format: uri
+          maxLength: 255
+          example: "https://example.com/dev"
+        TermsOfServiceUri:
+          description: A compliant URI
+          pattern: "^(http:\\/\\/|https:\\/\\/).*"
+          x-pattern-message: "TermsOfServiceUri must be in a URI format https://... or http://..."
+          type: string
+          format: uri
+          maxLength: 255
+          example: "https://example.com/tos"
+        OpenIDDiscoveryDocument:
+          description: A compliant URI
+          pattern: "^(http:\\/\\/|https:\\/\\/).*"
+          x-pattern-message: "OpenIDDiscoveryDocument must be in a URI format https://... or http://..."
+          type: string
+          format: uri
+          maxLength: 255
+          example: "https://example.com/.well-known/openid-configuration"
+        Issuer:
+          description: An issuer value pulled from the well-known endpoint
+          type: string
+          format: uri
+          example: "http://example.com/"
+        PayloadSigningCertLocationUri:
+          description: A compliant URI
+          pattern: "^(http:\\/\\/|https:\\/\\/).*"
+          x-pattern-message: "PayloadSigningCertLocationUri must be in a URI format https://... or http://..."
+          type: string
+          format: uri
+          maxLength: 255
+          example: "https://example.com/sign"
+        ParentAuthorisationServerId:
+          type: string
+          maxLength: 40
+          example: "b4018b33-358c-4137-b64a-6e5c674167a0"
+
+    ApiResource:
+      type: object
+      properties:
+        ApiResourceId:
+          type: string
+          maxLength: 40
+          description: The unique ID of an Api version resource
+          example: "7c6c6648-83a9-4505-82fc-b6cd2aa84ea2"
+        ApiVersion:
+          type: string
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          description: The version number of the API
+          example: "1.0.1"
+        ApiDiscoveryEndpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiDiscoveryEndpoint'
+        FamilyComplete:
+          type: boolean
+          description: Denotes whether or not the api resource has had all related api endpoints published
+        ApiCertificationUri:
+          type: string
+          description: Link to the certifation package. Example https://github.com/Open[Domain]/conformance/blob/main/submissions/functional/business/1.0.3/api-business-customer.zip
+          pattern: '^(https://).*'
+          format: uri
+          x-pattern-message: "ApiCertificationUri must be in a URI format https://..."
+          maxLength: 500
+          example: "https://github.com/Open[Domain]/conformance/blob/main/submissions/functional/business/1.0.3/api-business-customer.zip"
+        CertificationStatus:
+          type: string
+          description: Is this certification current or expired
+          enum:
+            - Awaiting Certification
+            - Certified
+            - Deprecated
+            - Rejected
+            - Self-Certified
+          default: Awaiting Certification
+        CertificationStartDate:
+          type: string
+          description: JSONDatetime of certification start date
+          pattern: "^[0-3][0-9]/[0-1][0-9]/2([0-9]{3})$"
+          example: "01/02/2020"
+        CertificationExpirationDate:
+          type: string
+          description: JSONDatetime of certification expiration date
+          pattern: "^[0-3][0-9]/[0-1][0-9]/2([0-9]{3})$"
+          example: "01/03/2020"
+        ApiFamilyType:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: The type of API this record describes
+          x-required-message: Family Type must be provided
+          example: "payments"
+
+    ApiDiscoveryEndpoint:
+      type: object
+      properties:
+        ApiDiscoveryId:
+          type: string
+          maxLength: 40
+          description: Unique Id of this discovery endpoint record
+          example: "360a1315-3ab4-4930-be99-aa66a767c9c6"
+        ApiEndpoint:
+          description: A compliant URI
+          pattern: "^(http:\\/\\/|https:\\/\\/).*"
+          x-pattern-message: "ApiEndpoint must be in a URI format https://... or http://..."
+          type: string
+          format: uri
+          maxLength: 255
+          example: "https://example.com/payments/v1/payments"
+
+    AuthorisationServerCertification:
+      type: object
+      properties:
+        CertificationStartDate:
+          type: string
+          description: JSONDatetime of certification start date
+          pattern: "^[0-3][0-9]/[0-1][0-9]/2([0-9]{3})$"
+          example: "01/02/2021"
+        CertificationExpirationDate:
+          type: string
+          description: JSONDatetime of certification expiration date
+          pattern: "^[0-3][0-9]/[0-1][0-9]/2([0-9]{3})$"
+          example: "01/03/2021"
+        CertificationId:
+          type: string
+          description: Unique ID associated with the auth server certification
+          minLength: 1
+          maxLength: 40
+          example: "9b7ea6b2-83b2-437d-a408-7ff4d1c8d1ba"
+        AuthorisationServerId:
+          type: string
+          maxLength: 40
+          example: "f6a52f4a-e270-4482-914e-9948c594f876"
+        Status:
+          type: string
+          description: Is this certification current or expired
+          enum:
+            - Awaiting Certification
+            - Certified
+            - Deprecated
+            - Rejected
+            - Self-Certified
+          default: Awaiting Certification
+        ProfileVariant:
+          type: string
+          oneOf:
+            - $ref: '#/components/schemas/CertificationCibaEnum'
+            - $ref: '#/components/schemas/CertificationRedirectEnum'
+            - $ref: '#/components/schemas/CertificationDCREnum'
+          description: Type of certification
+          x-required-message: Certification needs to have a type
+        ProfileVersion:
+          type: number
+          description: The version number of the certification
+          x-required-message: Version must be provided
+          example: 1
+        CertificationURI:
+          type: string
+          description: Link to the certifation package. Example https://github.com/Open[Domain]/conformance/blob/main/submissions/functional/business/1.0.3/api-business-customer.zip
+          pattern: '^(https://).*'
+          format: uri
+          x-pattern-message: "ApiCertificationUri must be in a URI format https://..."
+          maxLength: 500
+          example: "https://github.com/OpenBanking/conformance/blob/main/submissions/functional/business/1.0.3/payments.zip"
+
+    CertificationRedirectEnum:
+      type: string
+      description: The type of redirect certifications
+      enum:
+        - FAPI Adv. OP w/ MTLS
+        - FAPI Adv. OP w/ MTLS, PAR
+        - FAPI Adv. OP w/ Private Key
+        - FAPI Adv. OP w/ Private Key, PAR
+
+    CertificationCibaEnum:
+      type: string
+      description: The type of ciba certification
+      enum:
+        - FAPI-CIBA OP poll w/ MTLS
+        - FAPI-CIBA OP poll w/ Private Key
+        - FAPI-CIBA OP Ping w/ MTLS
+        - FAPI-CIBA OP Ping w/ Private Key
+
+    CertificationDCREnum:
+      type: string
+      description: The type of DCR certification
+      enum:
+        - DCR Signed payload - JWT
+        - DCR Unsigned payload- JSON
+
+    OrganisationAuthorityDomainClaim:
+      type: object
+      properties:
+        OrganisationAuthorityDomainClaimId:
+          type: string
+          description: The unique org authority domain claim ID
+          example: "f6c5b57f-636f-4f97-9dc6-1dccc2ae3da5"
+        AuthorisationDomainName:
+          type: string
+          description: The authorisation domain name
+          example: "auth domain"
+        AuthorityId:
+          type: string
+          description: The GUID of the Authority
+          example: "fc17cb41-461e-42c6-838b-11cccf9d000e"
+        AuthorityName:
+          type: string
+          description: The name of the Authority
+          example: "authority"
+        RegistrationId:
+          type: string
+          description: The registration ID
+          example: "123456789"
+        Status:
+          type: string
+          description: Is this user Active or Inactive
+          enum:
+            - Active
+            - Inactive
+          default: Active
+
+    OrganisationAuthorityClaim:
+      type: object
+      properties:
+        OrganisationId:
+          $ref: '#/components/schemas/OrganisationId'
+        OrganisationAuthorityClaimId:
+          type: string
+          description: Unique ID associated with the authority claims
+          minLength: 1
+          maxLength: 40
+          example: "0234c085-8ee9-42be-afa8-0cdfa6f4fb4d"
+        AuthorityId:
+          type: string
+          description: Unique ID associated with the Authorisation reference schema
+          minLength: 1
+          maxLength: 40
+          example: "fc17cb41-461e-42c6-838b-11cccf9d000e"
+        Status:
+          type: string
+          description: Is this software statement Active/Inactive
+          enum:
+            - Active
+            - Inactive
+          default: Active
+        AuthorisationDomain:
+          type: string
+          description: Authorisation Domain for the authority
+          maxLength: 30
+          example: "Authorisation"
+        Role:
+          type: string
+          description: Roles for the Authority i.e. ASPSP, AISP, PISP, CBPII
+          maxLength: 30
+          example: "ASPSP"
+        Authorisations:
+          type: array
+          items:
+            type: object
+            properties:
+              Status:
+                type: string
+                description: Is this authorsation Active/Inactive
+                enum:
+                  - Active
+                  - Inactive
+                default: Active
+              MemberState:
+                type: string
+                description: Abbreviated states information i.e. GB, IE, NL etc
+                maxLength: 2
+        RegistrationId:
+          type: string
+          description: Registration ID for the organisation
+          maxLength: 40
+          example: "7da88108-6baa-4127-9b8a-aaf2c37dac64"

@@ -1,0 +1,28 @@
+{
+  "mode": "sandbox",
+  "host": "127.0.0.1",
+  "port": 3000,
+  "organisationId": "REPLACE_WITH_DIRECTORY_ORGANISATION_ID",
+  "softwareId": "REPLACE_WITH_SOFTWARE_STATEMENT_ID",
+  "jwksUri": "https://replace-keystore.invalid/replace-with-software-jwks-uri",
+  "redirectUris": ["https://replace-wallet.invalid/callback"],
+  "androidOrigins": ["android:apk-key-hash:REPLACE_WITH_ANDROID_APK_SHA256_BASE64URL_KEY_"],
+  "scopes": ["REPLACE_WITH_SCOPES_AUTHORISED_BY_SSA_AND_AS"],
+  "grantTypes": ["client_credentials", "authorization_code", "refresh_token"],
+  "responseTypes": ["code id_token"],
+  "directory": {
+    "participantsUrl": "https://replace-directory.invalid/replace-with-participants-url",
+    "ssaUrl": "https://replace-directory.invalid/replace-with-software-assertion-url",
+    "jwksUri": "https://replace-keystore.invalid/replace-with-directory-jwks-uri",
+    "issuer": "REPLACE_WITH_EXACT_DIRECTORY_SSA_ISSUER",
+    "tokenFile": "secrets/directory.token",
+    "cacheSeconds": 300
+  },
+  "allowedOrigins": ["https://replace-directory.invalid", "https://replace-keystore.invalid", "https://replace-as.invalid", "https://replace-mtls-as.invalid", "https://replace-resources.invalid"],
+  "tls": { "caFile": "certificates/trust-bundle.pem", "certFile": "certificates/brcac-chain.pem", "keyFile": "secrets/brcac.key", "crlFile": "certificates/trusted-current-crls.pem" },
+  "signing": { "certFile": "certificates/brseal-chain.pem", "keyFile": "secrets/brseal.key" },
+  "encryptionKeyFile": "secrets/encryption.key",
+  "vaultKeyFile": "secrets/vault.key",
+  "adminTokenFile": "secrets/admin.token",
+  "databaseUrlFile": "secrets/database.url"
+}
